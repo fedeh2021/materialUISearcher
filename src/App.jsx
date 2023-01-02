@@ -6,44 +6,48 @@ import UserCard from "./containers/UserCard";
 
 const App = () => {
   const [inputUser, setInputUser] = useState("octocat");
-  const [userState, setUserState] = useState("inputUser");
+  const [userState, setUserState] = useState(inputUser);
   const [notFound, setNotFound] = useState(false);
 
-  const gettingUser = async (user) => {
+  const gettinUser = async (user) => {
     const userResponse = await getGitHubUser(user);
     if (userState === "octocat") {
-      localStorage.setItem("octocat", userResponse);
+      localStorage.setItem("octocat", JSON.stringify(userResponse));
     }
 
-    if (userResponse.message === 'Not Found'){
-      const {octocat} = localStorage
-      setInputUser(octocat)
-      setNotFound(true)
+    if (userResponse.message === "Not Found") {
+      const { octocat } = localStorage;
+      setInputUser(octocat);
+      setUserState(JSON.parse(octocat));
+      setNotFound(true);
     } else {
-      setUserState(userResponse)
+      setUserState(userResponse);
+      setNotFound(false);
     }
   };
-  console.log(userState)
   useEffect(() => {
-    gettingUser(inputUser);
+    gettinUser(inputUser);
   }, [inputUser]);
 
+  const containerStyles = {
+    background: "whitesmoke",
+    width: "80vw",
+    height: "500px",
+    borderRadius: "16px",
+    marginTop: "40px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  };
+
   return (
-    <Container
-      className=""
-      sx={{
-        background: "whitesmoke",
-        width: "80vw",
-        height: "500px",
-        borderRadius: "16px",
-        marginTop: "40px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
-      <Searcher inputUser={inputUser} setInputUser={setInputUser} />
-      <UserCard userState={userState}/>
+    <Container sx={containerStyles}>
+      <Searcher
+        inputUser={inputUser}
+        setInputUser={setInputUser}
+        notFound={notFound}
+      />
+      <UserCard userState={userState} />
     </Container>
   );
 };
